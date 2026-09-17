@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+ui-debug.log
+
+# Service account key — never commit this, it's an admin credential.
+seed/serviceAccountKey.json
+
+# OS / editor cruft
+.DS_Store

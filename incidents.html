@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incidents | AquaSentinel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script src="js/tailwind-config.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="bg-aquaDark text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-white">
+
+    <div id="sidebar-backdrop"></div>
+    <aside id="sidebar"></aside>
+
+    <div class="app-main">
+        <header id="topbar"></header>
+
+        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto">
+
+            <!-- Filters -->
+            <div class="glass-panel rounded-2xl border border-slate-800 p-4 flex flex-wrap items-center gap-3">
+                <i class="fa-solid fa-filter text-cyan-400 ml-1"></i>
+                <select id="filter-severity" class="bg-slate-900 border border-slate-700 text-sm text-white rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-500">
+                    <option value="all">All Severities</option>
+                    <option value="critical">Critical</option>
+                    <option value="warning">Warning</option>
+                </select>
+                <select id="filter-status" class="bg-slate-900 border border-slate-700 text-sm text-white rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-500">
+                    <option value="all">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="investigating">Investigating</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+                <select id="filter-site" class="bg-slate-900 border border-slate-700 text-sm text-white rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-500">
+                    <option value="all">All Sites</option>
+                </select>
+                <span class="text-xs text-slate-500 ml-auto" id="result-count"></span>
+            </div>
+
+            <!-- Table -->
+            <div class="glass-panel rounded-3xl border border-slate-800 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full data-table">
+                        <thead>
+                            <tr>
+                                <th>Incident</th>
+                                <th>Site</th>
+                                <th>Severity</th>
+                                <th>Trigger</th>
+                                <th>Status</th>
+                                <th>Reported</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incidents-table"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Detail drawer -->
+    <div id="drawer-backdrop" class="fixed inset-0 bg-black/60 z-[60] opacity-0 pointer-events-none transition-opacity"></div>
+    <aside id="incident-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[480px] bg-aquaDark border-l border-cyan-500/20 z-[61] translate-x-full transition-transform overflow-y-auto">
+        <div id="incident-drawer-content" class="p-6"></div>
+    </aside>
+
+    <script type="module" src="js/incidents.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+rules_version = '2';
+
+// AquaSentinel — Firestore security rules.
+//
+// One mine (Khanyisa Colliery), several staff — this is NOT tenant
+// isolation between mines. It's permission separation: everyone signed in
+// sees the same sites/incidents/tasks, but what they can WRITE depends on
+// their role, read from their own users/{uid} document.
+//
+// Roles: field (acknowledge incidents, work tasks), compliance (all of
+// that, plus submits reports), viewer (read-only everywhere). New accounts
+// default to 'viewer' via the onUserCreate Cloud Function — nobody grants
+// themselves a stronger role client-side.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function myRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isField() {
+      return signedIn() && myRole() == 'field';
+    }
+
+    function isCompliance() {
+      return signedIn() && myRole() == 'compliance';
+    }
+
+    function canWorkIncidentsAndTasks() {
+      return isField() || isCompliance();
+    }
+
+    // ---- users: everyone can read their own profile (for role lookups);
+    // nobody writes their own role from the client. Roles are set by the
+    // seed script or the onUserCreate trigger (both use the Admin SDK,
+    // which bypasses these rules entirely).
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // ---- sites: latest snapshot per monitoring point. Only Cloud
+    // Functions write here (the ESP32 ingest endpoint, via the Admin SDK)
+    // — no client, of any role, writes directly to a site's readings.
+    match /sites/{siteId} {
+      allow read: if signedIn();
+      allow write: if false;
+
+      match /readings/{readingId} {
+        allow read: if signedIn();
+        allow write: if false;
+      }
+    }
+
+    // ---- incidents: everyone reads; field officers and compliance
+    // managers can update status + append audit entries; only the fields
+    // relevant to a status change may move (nobody edits history).
+    match /incidents/{incidentId} {
+      allow read: if signedIn();
+      allow update: if canWorkIncidentsAndTasks()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'audit']);
+      allow create, delete: if false; // incidents are created by the ingest function only
+    }
+
+    // ---- tasks: everyone reads; field + compliance can change status.
+    match /tasks/{taskId} {
+      allow read: if signedIn();
+      allow update: if canWorkIncidentsAndTasks()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+      allow create, delete: if false;
+    }
+
+    // ---- reports: everyone reads; only a compliance manager can submit
+    // (move a report from pending/overdue to submitted).
+    match /reports/{reportId} {
+      allow read: if signedIn();
+      allow update: if isCompliance()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'submittedBy', 'submittedDate']);
+      allow create, delete: if false;
+    }
+
+    // ---- devices: device-key -> siteId mapping used by the ingest
+    // function. Never exposed to the browser client.
+    match /devices/{deviceId} {
+      allow read, write: if false;
+    }
+
+    // ---- aiReports: the AI Incident Analysis Agent's generated reports,
+    // one per incident (doc id == incident id). Everyone signed in can
+    // read them (same visibility as the incidents they explain); only the
+    // onIncidentCreated Cloud Function writes them, via the Admin SDK.
+    match /aiReports/{reportId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+  }
+}

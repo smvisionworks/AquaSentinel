@@ -1,0 +1,135 @@
+/* AquaSentinel — custom styles (Tailwind handles utility classes; this file
+   holds the pieces Tailwind can't express: glassmorphism, glows, keyframe
+   animations, and the hero 3D layer). */
+
+.glass-panel {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+.glow-text {
+    text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+.glow-box {
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.15);
+}
+
+@keyframes pulseSlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.02); }
+}
+.animate-pulse-slow {
+    animation: pulseSlow 4s ease-in-out infinite;
+}
+
+/* ---- Logo chip ---- */
+.logo-chip {
+    background: #f4f6f8;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+}
+
+/* ---- Nav ---- */
+#nav-bar {
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
+}
+#nav-bar.nav-scrolled {
+    background: rgba(15, 23, 42, 0.65);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+/* ---- Hero / 3D scene ---- */
+#hero {
+    background: radial-gradient(ellipse at 20% 30%, #0f1a2e 0%, #0a0f1d 55%, #05070d 100%);
+}
+#hero-canvas, #expertise-canvas {
+    display: block;
+    touch-action: none;
+}
+
+@keyframes scrollHint {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(8px); opacity: 1; }
+}
+.scroll-hint i { animation: scrollHint 2s ease-in-out infinite; }
+
+/* ---- Scroll reveal ---- */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---- Expertise: connector lines from callouts to the droplet ---- */
+.connector {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(56,189,248,0.5), rgba(56,189,248,0.05));
+}
+.connector.reverse {
+    background: linear-gradient(270deg, rgba(56,189,248,0.5), rgba(56,189,248,0.05));
+}
+.connector-dot {
+    position: absolute;
+    width: 7px; height: 7px;
+    border-radius: 9999px;
+    background: #38bdf8;
+    box-shadow: 0 0 8px rgba(56,189,248,0.8);
+}
+
+/* ---- Solutions / pillar cards ---- */
+.pillar-card {
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.pillar-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+/* ---- Compliance carousel ---- */
+.carousel-wrap { overflow: hidden; }
+#carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+.carousel-slide { flex: 0 0 100%; }
+.carousel-dot {
+    width: 8px; height: 8px;
+    border-radius: 9999px;
+    background: #334155;
+    transition: background 0.2s ease, width 0.2s ease;
+}
+.carousel-dot.active {
+    background: #38bdf8;
+    width: 20px;
+    border-radius: 9999px;
+}
+.carousel-arrow {
+    width: 2.75rem; height: 2.75rem;
+    border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+/* ---- Scroll reveal ---- */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}

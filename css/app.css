@@ -1,0 +1,205 @@
+/* AquaSentinel — internal dashboard shell (sidebar/topbar layout, tables,
+   badges, map chrome). Shared by command-centre.html, site.html,
+   incidents.html and tasks.html. Homepage-only styles stay in style.css. */
+
+.app-body {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ---- Sidebar ---- */
+#sidebar {
+    width: 264px;
+    flex-shrink: 0;
+    background: rgba(10, 15, 29, 0.92);
+    border-right: 1px solid rgba(56, 189, 248, 0.12);
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+}
+#sidebar.open { transform: translateX(0); }
+@media (min-width: 1024px) {
+    #sidebar { transform: translateX(0); }
+    .app-main { margin-left: 264px; }
+}
+
+#sidebar-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 39;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+#sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
+@media (min-width: 1024px) { #sidebar-backdrop { display: none; } }
+
+.nav-link {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 0.75rem;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.nav-link:hover { background: rgba(56, 189, 248, 0.08); color: #e2e8f0; }
+.nav-link.active {
+    background: linear-gradient(90deg, rgba(56,189,248,0.16), rgba(56,189,248,0.02));
+    color: #38bdf8;
+    border: 1px solid rgba(56,189,248,0.2);
+}
+.nav-link i { width: 1.1rem; text-align: center; }
+
+/* ---- Topbar ---- */
+#topbar {
+    position: sticky; top: 0; z-index: 30;
+    background: rgba(10, 15, 29, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+}
+
+/* ---- Cards / tables ---- */
+.data-table th {
+    text-align: left;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    font-weight: 600;
+    padding: 0.65rem 0.9rem;
+}
+.data-table td {
+    padding: 0.85rem 0.9rem;
+    font-size: 0.875rem;
+    border-top: 1px solid rgba(51, 65, 85, 0.6);
+}
+.data-table tr.row-link { cursor: pointer; transition: background 0.15s ease; }
+.data-table tr.row-link:hover { background: rgba(56, 189, 248, 0.05); }
+
+.status-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-width: 1px;
+}
+.status-dot { width: 0.4rem; height: 0.4rem; border-radius: 9999px; }
+
+/* ---- Map ---- */
+#site-map {
+    width: 100%;
+    height: 100%;
+    background: #0c1322;
+    border-radius: 1.5rem;
+}
+.leaflet-popup-content-wrapper {
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 0.9rem;
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.15);
+}
+.leaflet-popup-tip { background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.2); }
+.leaflet-popup-content { margin: 0.85rem 1rem; font-family: 'Inter', sans-serif; }
+.leaflet-container a.leaflet-popup-close-button { color: #94a3b8; }
+.leaflet-control-attribution { background: rgba(10,15,29,0.7) !important; color: #64748b !important; }
+.leaflet-control-attribution a { color: #38bdf8 !important; }
+.leaflet-control-zoom a { background: #0f172a !important; color: #e2e8f0 !important; border-color: rgba(56,189,248,0.2) !important; }
+
+.site-pin {
+    width: 20px; height: 20px; border-radius: 9999px;
+    border: 2px solid #0a0f1d;
+    box-shadow: 0 0 0 4px rgba(56,189,248,0.15);
+}
+.site-pin.pulse::after {
+    content: '';
+    position: absolute; inset: -6px;
+    border-radius: 9999px;
+    animation: pinPulse 1.8s ease-out infinite;
+}
+@keyframes pinPulse {
+    0% { box-shadow: 0 0 0 0 rgba(251,113,133,0.5); }
+    100% { box-shadow: 0 0 0 14px rgba(251,113,133,0); }
+}
+
+/* ---- Edge pipeline stepper ---- */
+.pipeline-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+}
+.pipeline-step .step-dot {
+    width: 2.25rem; height: 2.25rem; border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 0.5rem;
+    border: 2px solid #334155;
+    color: #64748b;
+    background: #0f172a;
+    transition: all 0.3s ease;
+}
+.pipeline-step.active .step-dot {
+    border-color: #38bdf8;
+    color: #38bdf8;
+    box-shadow: 0 0 16px rgba(56,189,248,0.4);
+}
+.pipeline-step.done .step-dot {
+    border-color: #34d399;
+    color: #34d399;
+    background: rgba(52,211,153,0.08);
+}
+.pipeline-line {
+    position: absolute; top: 1.1rem; left: -50%; width: 100%; height: 2px;
+    background: #334155; z-index: -1;
+}
+.pipeline-step:first-child .pipeline-line { display: none; }
+.pipeline-step.done .pipeline-line, .pipeline-step.active .pipeline-line { background: #38bdf8; }
+
+/* ---- Chart tooltip anchor ---- */
+.chart-wrap { position: relative; }
+
+/* ---- Login: account picker ---- */
+.user-card:hover { background: rgba(56, 189, 248, 0.08); }
+.user-card:not(:last-child) { border-bottom: 1px solid rgba(51, 65, 85, 0.5); }
+
+/* ---- Topbar: current-user chip + switch-user control ---- */
+.user-chip {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.4rem 0.6rem 0.4rem 0.4rem;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    background: rgba(15, 23, 42, 0.5);
+}
+.role-pill {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 9999px;
+    padding: 0.1rem 0.5rem;
+}
+.switch-user-btn {
+    font-size: 0.7rem;
+    color: #64748b;
+    transition: color 0.15s ease;
+}
+.switch-user-btn:hover { color: #f87171; }
+
+/* ---- Read-only affordances for gated controls ---- */
+.gated-select:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.gated-note {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-style: italic;
+}

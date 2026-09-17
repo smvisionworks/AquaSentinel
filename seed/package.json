@@ -1,0 +1,9 @@
+{
+  "name": "aquasentinel-seed",
+  "private": true,
+  "type": "commonjs",
+  "scripts": { "seed": "node seed.js" },
+  "dependencies": {
+    "firebase-admin": "^12.1.0"
+  }
+}

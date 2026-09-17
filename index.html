@@ -10,46 +10,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Inter & Space Grotesk -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        aquaDark: '#0a0f1d',
-                        aquaCard: 'rgba(15, 23, 42, 0.7)',
-                        aquaBorder: 'rgba(56, 189, 248, 0.15)',
-                        aquaNeon: '#38bdf8',
-                        aquaGlow: 'rgba(56, 189, 248, 0.25)',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(56, 189, 248, 0.15);
-        }
-        .glow-text {
-            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
-        }
-        .glow-box {
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.15);
-        }
-        @keyframes pulseSlow {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.02); }
-        }
-        .animate-pulse-slow {
-            animation: pulseSlow 4s ease-in-out infinite;
-        }
-    </style>
+    <!-- Three.js (r128 UMD build) for the hero globe and Expertise droplet -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Tailwind config -->
+    <script src="js/tailwind-config.js"></script>
+    <!-- Site styles (kept separate from markup) -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="bg-aquaDark text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-white overflow-x-hidden">
 
@@ -58,61 +24,197 @@
     <div class="fixed bottom-10 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-slate-800/80">
+    <nav id="nav-bar" class="fixed top-0 left-0 right-0 z-50">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center glow-box">
-                    <i class="fa-solid fa-water text-white text-lg"></i>
+                <div class="logo-chip w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center shrink-0">
+                    <img src="assets/aquasentinel-icon.png" alt="AquaSentinel logo" class="w-full h-full object-cover">
                 </div>
                 <span class="font-display font-bold text-xl tracking-wider text-white">AQUA<span class="text-cyan-400">SENTINEL</span></span>
             </div>
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
-                <a href="#problem" class="hover:text-cyan-400 transition-colors">The Problem</a>
-                <a href="#technology" class="hover:text-cyan-400 transition-colors">Technology</a>
-                <a href="#command-centre" class="hover:text-cyan-400 transition-colors">Command Centre</a>
-                <a href="#pitch" class="hover:text-cyan-400 transition-colors">1:30 Pitch</a>
+                <a href="#solutions" class="hover:text-cyan-400 transition-colors">Solutions</a>
+                <a href="#expertise" class="hover:text-cyan-400 transition-colors">Expertise</a>
+                <a href="incidents.html" class="hover:text-cyan-400 transition-colors">Incidents</a>
+                <a href="tasks.html" class="hover:text-cyan-400 transition-colors">Tasks &amp; Compliance</a>
             </div>
             <div>
-                <a href="#command-centre" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-cyan-500/20">
-                    Live Telemetry
+                <a href="command-centre.html" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-lg shadow-cyan-500/20">
+                    Open Command Centre
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="relative pt-36 pb-20 md:pt-48 md:pb-32 px-6">
-        <div class="max-w-5xl mx-auto text-center">
-            <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-widest mb-6">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                AI-Powered IoT Water Intelligence
+    <!-- ============ HERO ============ -->
+    <section id="hero" class="relative min-h-screen w-full overflow-hidden flex items-center">
+        <div class="max-w-7xl mx-auto px-6 py-32 lg:py-0 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+            <!-- Left: copy -->
+            <div class="relative z-10">
+                <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-widest mb-6">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                    AI-Powered IoT Water Intelligence
+                </div>
+                <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
+                    Monitor. Detect. <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 glow-text">Comply. Protect.</span>
+                </h1>
+                <p class="text-lg text-slate-300 max-w-xl mb-10 leading-relaxed">
+                    AquaSentinel turns raw water-quality data into an automated early-warning and compliance layer — detecting contamination at the source and responding before it reaches communities downstream.
+                </p>
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    <a href="command-centre.html" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-7 py-3.5 rounded-full transition-all shadow-xl shadow-cyan-500/25 flex items-center justify-center space-x-3">
+                        <span>Open Command Centre</span>
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+                    <a href="#solutions" class="glass-panel hover:bg-slate-800/80 text-white font-medium px-7 py-3.5 rounded-full transition-all flex items-center justify-center space-x-3">
+                        <span>View Solutions</span>
+                    </a>
+                </div>
             </div>
-            <h1 class="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-                Monitor. Detect. <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 glow-text">Comply. Protect.</span>
-            </h1>
-            <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
-                Transforming environmental data into an automated early-warning and compliance layer to prevent contamination crises before they reach communities.
-            </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="#command-centre" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-8 py-4 rounded-xl transition-all shadow-xl shadow-cyan-500/25 flex items-center justify-center space-x-3">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Explore Command Centre</span>
-                </a>
-                <a href="#pitch" class="w-full sm:w-auto glass-panel hover:bg-slate-800/80 text-white font-medium px-8 py-4 rounded-xl transition-all flex items-center justify-center space-x-3">
-                    <i class="fa-solid fa-microphone-lines text-cyan-400"></i>
-                    <span>Read Pitch Script</span>
-                </a>
+
+            <!-- Right: glowing globe -->
+            <div class="relative h-[360px] sm:h-[440px] lg:h-[560px]">
+                <canvas id="hero-canvas" class="absolute inset-0 w-full h-full"></canvas>
+            </div>
+        </div>
+
+        <div class="scroll-hint absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center text-slate-400 text-xs uppercase tracking-widest">
+            <span class="mb-2">Scroll to explore</span>
+            <i class="fa-solid fa-chevron-down text-cyan-400"></i>
+        </div>
+    </section>
+
+    <!-- ============ OUR SOLUTIONS ============ -->
+    <section id="solutions" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-cyan-400 text-xs font-semibold uppercase tracking-widest">Our Solutions</span>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-2 mb-4">Four Pillars, One Automated Loop</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">
+                    AquaSentinel is built around a simple idea: catch contamination at the source, respond to it physically and immediately, and keep an evidence trail that stands up to scrutiny — without a person having to be watching.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="pillar-card reveal glass-panel rounded-3xl p-6 border border-slate-800">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-5 text-xl">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Monitor</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">Four sensors per node — Water Quality, pH, EC, and Temperature — continuously sample every monitored site.</p>
+                    <a href="command-centre.html" class="inline-flex items-center gap-1.5 text-cyan-400 text-xs font-semibold hover:text-cyan-300">All Sites <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+                </div>
+                <div class="pillar-card reveal glass-panel rounded-3xl p-6 border border-slate-800" style="transition-delay:0.08s;">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-5 text-xl">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Detect</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">Edge processing on the ESP32 compares readings to site thresholds instantly — no round-trip to the cloud required.</p>
+                    <a href="#expertise" class="inline-flex items-center gap-1.5 text-cyan-400 text-xs font-semibold hover:text-cyan-300">How It Works <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+                </div>
+                <div class="pillar-card reveal glass-panel rounded-3xl p-6 border border-slate-800" style="transition-delay:0.16s;">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mb-5 text-xl">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Respond</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">The dosing pump neutralises contamination on the spot; the isolation valve closes automatically for critical events.</p>
+                    <a href="site.html?id=site-pitwater-01" class="inline-flex items-center gap-1.5 text-cyan-400 text-xs font-semibold hover:text-cyan-300">See A Live Site <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+                </div>
+                <div class="pillar-card reveal glass-panel rounded-3xl p-6 border border-slate-800" style="transition-delay:0.24s;">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-5 text-xl">
+                        <i class="fa-solid fa-file-shield"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-white mb-2">Comply</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">Every reading, response, and incident is logged automatically into an audit-ready compliance record.</p>
+                    <a href="tasks.html" class="inline-flex items-center gap-1.5 text-cyan-400 text-xs font-semibold hover:text-cyan-300">Tasks &amp; Reports <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Live Telemetry Simulation Panel -->
-    <section id="command-centre" class="py-12 px-6">
+    <!-- ============ OUR EXPERTISE ============ -->
+    <section id="expertise" class="py-24 px-6 bg-slate-950/40 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <span class="text-cyan-400 text-xs font-semibold uppercase tracking-widest">Our Expertise</span>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-2 mb-4">One Edge-Processing Loop, Four Stages</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">
+                    Every AquaSentinel node runs the same physical loop, independent of connectivity — the cloud handles visualisation and record-keeping, never the emergency response itself.
+                </p>
+            </div>
+
+            <div class="relative h-[420px] sm:h-[480px] lg:h-[560px] max-w-3xl mx-auto">
+                <canvas id="expertise-canvas" class="absolute inset-0 w-full h-full"></canvas>
+
+                <!-- Sense — top left -->
+                <div class="hidden sm:block absolute" style="top:8%; left:0%; width:34%;">
+                    <div class="connector" style="top:14px; right:-8%; width:24%;"></div>
+                    <div class="connector-dot" style="top:10px; right:-9%;"></div>
+                    <div class="glass-panel rounded-xl px-4 py-3 border border-slate-800">
+                        <div class="flex items-center gap-2 text-cyan-400 text-[10px] font-semibold uppercase tracking-widest mb-1"><i class="fa-solid fa-satellite-dish"></i>Sense</div>
+                        <p class="text-xs text-slate-300 leading-snug">4 sensors sample pH, EC, temperature &amp; water quality.</p>
+                    </div>
+                </div>
+
+                <!-- Decide — top right -->
+                <div class="hidden sm:block absolute" style="top:8%; right:0%; width:34%;">
+                    <div class="connector reverse" style="top:14px; left:-8%; width:24%;"></div>
+                    <div class="connector-dot" style="top:10px; left:-9%;"></div>
+                    <div class="glass-panel rounded-xl px-4 py-3 border border-slate-800">
+                        <div class="flex items-center gap-2 text-amber-400 text-[10px] font-semibold uppercase tracking-widest mb-1"><i class="fa-solid fa-microchip"></i>Decide</div>
+                        <p class="text-xs text-slate-300 leading-snug">ESP32 compares readings to site thresholds at the edge.</p>
+                    </div>
+                </div>
+
+                <!-- Act — bottom left -->
+                <div class="hidden sm:block absolute" style="bottom:8%; left:0%; width:34%;">
+                    <div class="connector" style="bottom:14px; right:-8%; width:24%;"></div>
+                    <div class="connector-dot" style="bottom:10px; right:-9%;"></div>
+                    <div class="glass-panel rounded-xl px-4 py-3 border border-slate-800">
+                        <div class="flex items-center gap-2 text-rose-400 text-[10px] font-semibold uppercase tracking-widest mb-1"><i class="fa-solid fa-bolt"></i>Act</div>
+                        <p class="text-xs text-slate-300 leading-snug">Dosing pump treats water; valve closes for critical events.</p>
+                    </div>
+                </div>
+
+                <!-- Send — bottom right -->
+                <div class="hidden sm:block absolute" style="bottom:8%; right:0%; width:34%;">
+                    <div class="connector reverse" style="bottom:14px; left:-8%; width:24%;"></div>
+                    <div class="connector-dot" style="bottom:10px; left:-9%;"></div>
+                    <div class="glass-panel rounded-xl px-4 py-3 border border-slate-800">
+                        <div class="flex items-center gap-2 text-emerald-400 text-[10px] font-semibold uppercase tracking-widest mb-1"><i class="fa-solid fa-cloud-arrow-up"></i>Send</div>
+                        <p class="text-xs text-slate-300 leading-snug">Reading &amp; response logged to the Command Centre.</p>
+                    </div>
+                </div>
+
+                <!-- Mobile: stacked list (no canvas overlay clutter) -->
+                <div class="sm:hidden grid grid-cols-2 gap-3 mt-4 relative z-10">
+                    <div class="glass-panel rounded-xl px-3 py-3 border border-slate-800">
+                        <div class="text-cyan-400 text-[10px] font-semibold uppercase tracking-widest mb-1">Sense</div>
+                        <p class="text-xs text-slate-300">4 sensors sample the water.</p>
+                    </div>
+                    <div class="glass-panel rounded-xl px-3 py-3 border border-slate-800">
+                        <div class="text-amber-400 text-[10px] font-semibold uppercase tracking-widest mb-1">Decide</div>
+                        <p class="text-xs text-slate-300">ESP32 checks thresholds.</p>
+                    </div>
+                    <div class="glass-panel rounded-xl px-3 py-3 border border-slate-800">
+                        <div class="text-rose-400 text-[10px] font-semibold uppercase tracking-widest mb-1">Act</div>
+                        <p class="text-xs text-slate-300">Pump / valve respond.</p>
+                    </div>
+                    <div class="glass-panel rounded-xl px-3 py-3 border border-slate-800">
+                        <div class="text-emerald-400 text-[10px] font-semibold uppercase tracking-widest mb-1">Send</div>
+                        <p class="text-xs text-slate-300">Logged to Command Centre.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ LIVE TELEMETRY PREVIEW ============ -->
+    <section id="live-preview" class="py-20 px-6">
         <div class="max-w-6xl mx-auto">
             <div class="glass-panel rounded-3xl p-6 sm:p-8 glow-box border border-cyan-500/20">
                 <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-slate-800 gap-4">
                     <div>
-                        <div class="text-xs uppercase tracking-widest text-cyan-400 font-semibold">Compliance Command Centre</div>
+                        <div class="text-xs uppercase tracking-widest text-cyan-400 font-semibold">Live From The Field</div>
                         <h2 class="font-display text-2xl font-bold text-white mt-1">Node Station #4: Upstream / Downstream Matrix</h2>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -123,7 +225,6 @@
                     </div>
                 </div>
 
-                <!-- Telemetry Metrics Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
                     <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
                         <div class="text-slate-400 text-xs font-medium uppercase">pH Level</div>
@@ -131,9 +232,7 @@
                             <span>7.42</span>
                             <span class="text-xs text-emerald-400 font-normal">Optimal (Norm: 7.0)</span>
                         </div>
-                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                            <div class="bg-emerald-400 h-full w-3/4"></div>
-                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden"><div class="bg-emerald-400 h-full w-3/4"></div></div>
                     </div>
                     <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
                         <div class="text-slate-400 text-xs font-medium uppercase">Turbidity</div>
@@ -141,9 +240,7 @@
                             <span>2.1 NTU</span>
                             <span class="text-xs text-emerald-400 font-normal">Stable</span>
                         </div>
-                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                            <div class="bg-cyan-400 h-full w-1/3"></div>
-                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden"><div class="bg-cyan-400 h-full w-1/3"></div></div>
                     </div>
                     <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
                         <div class="text-slate-400 text-xs font-medium uppercase">Water Temperature</div>
@@ -151,9 +248,7 @@
                             <span>19.4°C</span>
                             <span class="text-xs text-emerald-400 font-normal">Normal Range</span>
                         </div>
-                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                            <div class="bg-blue-400 h-full w-1/2"></div>
-                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden"><div class="bg-blue-400 h-full w-1/2"></div></div>
                     </div>
                     <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
                         <div class="text-slate-400 text-xs font-medium uppercase">Conductivity</div>
@@ -161,13 +256,10 @@
                             <span>310 µS/cm</span>
                             <span class="text-xs text-emerald-400 font-normal">Baseline Match</span>
                         </div>
-                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                            <div class="bg-cyan-500 h-full w-2/5"></div>
-                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden"><div class="bg-cyan-500 h-full w-2/5"></div></div>
                     </div>
                 </div>
 
-                <!-- Incident Log Footer Note -->
                 <div class="bg-cyan-950/30 border border-cyan-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between text-sm gap-3">
                     <div class="flex items-center space-x-3 text-slate-300">
                         <i class="fa-solid fa-shield-halved text-cyan-400 text-lg"></i>
@@ -175,126 +267,83 @@
                     </div>
                     <span class="text-xs text-slate-400">Tamper-evident audit ledger running.</span>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- The Problem Section -->
-    <section id="problem" class="py-20 px-6">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-16">
-                <span class="text-cyan-400 text-xs font-semibold uppercase tracking-widest">The Core Issue</span>
-                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-2">The Problem Isn't Just Contamination. <br>It's Finding Out Too Late.</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass-panel p-8 rounded-3xl border border-slate-800">
-                    <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mb-6 text-xl">
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                    </div>
-                    <h3 class="font-display font-bold text-lg text-white mb-3">Dangerous Time Gaps</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Manual sampling and lab reporting create massive delays between water quality shifts and human awareness.</p>
-                </div>
-                <div class="glass-panel p-8 rounded-3xl border border-slate-800">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-6 text-xl">
-                        <i class="fa-solid fa-eye-slash"></i>
-                    </div>
-                    <h3 class="font-display font-bold text-lg text-white mb-3">Blind Spots Upstream</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Communities often only realize water is compromised after it has already affected local health and ecosystems.</p>
-                </div>
-                <div class="glass-panel p-8 rounded-3xl border border-slate-800">
-                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 text-xl">
-                        <i class="fa-solid fa-file-excel"></i>
-                    </div>
-                    <h3 class="font-display font-bold text-lg text-white mb-3">Fragmented Records</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Environmental officers struggle with scattered spreadsheets and unorganized compliance reporting documents.</p>
+                <div class="text-center mt-6">
+                    <a href="command-centre.html" class="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-semibold">
+                        <span>Open the full Command Centre — all sites, live map, incidents &amp; tasks</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Technology & Solution -->
-    <section id="technology" class="py-20 px-6 bg-slate-950/40">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-16">
-                <span class="text-cyan-400 text-xs font-semibold uppercase tracking-widest">Hardware + AI Innovation</span>
-                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-2">How AquaSentinel Works</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div class="space-y-6">
-                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 shrink-0 font-bold font-display">01</div>
-                        <div>
-                            <h3 class="font-display font-bold text-white text-base">ESP32 IoT Hardware</h3>
-                            <p class="text-slate-400 text-sm mt-1">Physical sensor nodes monitor pH, turbidity, temperature, and conductivity continuously at strategic points.</p>
-                        </div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 shrink-0 font-bold font-display">02</div>
-                        <div>
-                            <h3 class="font-display font-bold text-white text-base">AI Baseline Comparison</h3>
-                            <p class="text-slate-400 text-sm mt-1">Continuously compares upstream and downstream readings against historical patterns to detect anomalies instantly.</p>
-                        </div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 shrink-0 font-bold font-display">03</div>
-                        <div>
-                            <h3 class="font-display font-bold text-white text-base">Tamper-Evident Audit Trail</h3>
-                            <p class="text-slate-400 text-sm mt-1">Automatically logs when an incident occurred, who was notified, and what corrective action was taken.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-panel p-8 rounded-3xl border border-cyan-500/20 glow-box relative overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-2xl"></div>
-                    <h3 class="font-display font-bold text-xl text-white mb-4">Multi-Sector Impact</h3>
-                    <p class="text-slate-300 text-sm leading-relaxed mb-6">
-                        Although our story starts with mining, AquaSentinel scales effortlessly across agriculture, municipal water systems, manufacturing plants, and community water points.
-                    </p>
-                    <ul class="space-y-3 text-sm text-slate-300">
-                        <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Detect problems earlier</span></li>
-                        <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Make compliance effortless</span></li>
-                        <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-cyan-400"></i><span>Protect vulnerable communities</span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pitch Script Section -->
-    <section id="pitch" class="py-20 px-6">
+    <!-- ============ OUR SUPPORT (compliance carousel) ============ -->
+    <section id="support" class="py-24 px-6">
         <div class="max-w-4xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-cyan-400 text-xs font-semibold uppercase tracking-widest">Presentation Script</span>
-                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-2">The 1:30 Team Pitch</h2>
+            <div class="text-center mb-14">
+                <span class="text-cyan-400 text-xs font-semibold uppercase tracking-widest">Our Support</span>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mt-2">We Handle The Paperwork</h2>
+                <p class="text-slate-400 mt-3 max-w-xl mx-auto">Compliance teams get a ready-made record for every event — no spreadsheets, no chasing site officers for what happened.</p>
             </div>
-            <div class="glass-panel rounded-3xl p-8 sm:p-10 border border-slate-800 space-y-8">
-                <div>
-                    <span class="text-xs uppercase font-semibold tracking-wider text-cyan-400">Siya — Intro + The Problem</span>
-                    <p class="text-slate-300 text-sm sm:text-base mt-2 leading-relaxed">
-                        "Good morning, judges. I come from an area where a local river became severely contaminated by acidic water from a mine, and the community found out far too late. Manual sampling leaves dangerous blind spots between when water quality changes and when someone notices. That delay is the problem we decided to solve. Enter <strong>AquaSentinel</strong>."
-                    </p>
+
+            <div class="relative">
+                <div class="carousel-wrap glass-panel rounded-3xl border border-slate-800">
+                    <div id="carousel-track">
+                        <div class="carousel-slide p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-8">
+                            <div class="w-20 h-20 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-3xl shrink-0">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display font-bold text-xl text-white mb-2">Automated Incident Logging</h3>
+                                <p class="text-slate-300 text-sm leading-relaxed mb-4">Every anomaly automatically creates an incident record — trigger, automated response, before/after evidence, and a timestamped audit trail — the moment it happens.</p>
+                                <a href="incidents.html" class="inline-flex items-center gap-1.5 text-cyan-400 text-sm font-semibold hover:text-cyan-300">View Incidents <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                            </div>
+                        </div>
+                        <div class="carousel-slide p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-8">
+                            <div class="w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-3xl shrink-0">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display font-bold text-xl text-white mb-2">Site Inspection Tasks</h3>
+                                <p class="text-slate-300 text-sm leading-relaxed mb-4">When physical follow-up is needed, AquaSentinel assigns an inspection task automatically — which site, what to check, and who's responsible.</p>
+                                <a href="tasks.html" class="inline-flex items-center gap-1.5 text-cyan-400 text-sm font-semibold hover:text-cyan-300">View Tasks <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                            </div>
+                        </div>
+                        <div class="carousel-slide p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-8">
+                            <div class="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-3xl shrink-0">
+                                <i class="fa-solid fa-file-circle-check"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display font-bold text-xl text-white mb-2">Audit-Ready Reports</h3>
+                                <p class="text-slate-300 text-sm leading-relaxed mb-4">Compliance reports are pre-populated from sensor history and incident logs — your team reviews and submits, instead of building them from scratch.</p>
+                                <a href="tasks.html" class="inline-flex items-center gap-1.5 text-cyan-400 text-sm font-semibold hover:text-cyan-300">View Reports <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <hr class="border-slate-800">
-                <div>
-                    <span class="text-xs uppercase font-semibold tracking-wider text-cyan-400">Karabo — The Solution + Technology</span>
-                    <p class="text-slate-300 text-sm sm:text-base mt-2 leading-relaxed">
-                        "AquaSentinel is an AI-powered IoT water monitoring and compliance platform. Our device uses an ESP32 connected to sensors tracking pH, turbidity, temperature, and conductivity. Placed strategically upstream and downstream, our AI continuously compares readings against historical baselines. If conditions suddenly shift, the system instantly detects the anomaly—identifying what changed, where, and when—generating an automated incident record."
-                    </p>
-                </div>
-                <hr class="border-slate-800">
-                <div>
-                    <span class="text-xs uppercase font-semibold tracking-wider text-cyan-400">Unathi — Compliance + Accountability</span>
-                    <p class="text-slate-300 text-sm sm:text-base mt-2 leading-relaxed">
-                        "That feeds into our Compliance Command Centre. Instead of scattered spreadsheets, mines manage live sensor data and tasks in one place. Crucially, it logs an unalterable digital audit trail: when an incident happened, who was notified, and what action was taken. Regulators get transparency, and communities get peace of mind."
-                    </p>
-                </div>
-                <hr class="border-slate-800">
-                <div>
-                    <span class="text-xs uppercase font-semibold tracking-wider text-cyan-400">Amu — Impact + Close</span>
-                    <p class="text-slate-300 text-sm sm:text-base mt-2 leading-relaxed">
-                        "From mining to agriculture and municipalities, wherever water quality matters, AquaSentinel turns data into action. Detect earlier. Make compliance easier. Create accountability. AquaSentinel. Monitor. Detect. Comply. Protect. Thank you."
-                    </p>
-                </div>
+
+                <button id="carousel-prev" aria-label="Previous" class="carousel-arrow glass-panel border border-slate-800 text-slate-300 hover:text-cyan-400 absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 hidden sm:flex">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button id="carousel-next" aria-label="Next" class="carousel-arrow glass-panel border border-slate-800 text-slate-300 hover:text-cyan-400 absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 hidden sm:flex">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
+
+            <div id="carousel-dots" class="flex items-center justify-center gap-2 mt-6"></div>
+        </div>
+    </section>
+
+    <!-- ============ CLOSING CTA ============ -->
+    <section class="py-24 px-6">
+        <div class="max-w-4xl mx-auto text-center glass-panel rounded-3xl border border-cyan-500/20 glow-box p-12 sm:p-16">
+            <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mb-4">Every Site. Every Reading. Accounted For.</h2>
+            <p class="text-slate-400 max-w-xl mx-auto mb-8">From mining to agriculture and municipal water, AquaSentinel turns raw sensor data into detection, automated response, and audit-ready compliance — site by site.</p>
+            <a href="command-centre.html" class="inline-flex items-center gap-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-8 py-4 rounded-full transition-all shadow-xl shadow-cyan-500/25">
+                <span>Open Command Centre</span>
+                <i class="fa-solid fa-arrow-right text-sm"></i>
+            </a>
         </div>
     </section>
 
@@ -302,14 +351,22 @@
     <footer class="border-t border-slate-800 py-12 px-6 text-center text-sm text-slate-500">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-water text-cyan-400"></i>
+                <div class="logo-chip w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+                    <img src="assets/aquasentinel-icon.png" alt="AquaSentinel logo" class="w-full h-full object-cover">
+                </div>
                 <span class="font-display font-bold text-slate-300">AquaSentinel</span>
             </div>
-            <div>
-                &copy; 2026 AquaSentinel. All rights reserved. Monitor. Detect. Comply. Protect.
+            <div class="flex items-center gap-5 text-xs">
+                <a href="command-centre.html" class="hover:text-cyan-400 transition-colors">Command Centre</a>
+                <a href="incidents.html" class="hover:text-cyan-400 transition-colors">Incidents</a>
+                <a href="tasks.html" class="hover:text-cyan-400 transition-colors">Tasks &amp; Compliance</a>
             </div>
+            <div>&copy; 2026 AquaSentinel. All rights reserved.</div>
         </div>
     </footer>
+
+    <!-- Site behaviour (kept separate from markup) -->
+    <script src="js/main.js"></script>
 
 </body>
 </html>

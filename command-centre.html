@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Centre | AquaSentinel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="js/tailwind-config.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="bg-aquaDark text-slate-100 font-sans antialiased selection:bg-cyan-500 selection:text-white">
+
+    <div id="sidebar-backdrop"></div>
+    <aside id="sidebar"></aside>
+
+    <div class="app-main">
+        <header id="topbar"></header>
+
+        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto">
+
+            <!-- Stat tiles -->
+            <div id="stat-tiles" class="grid grid-cols-2 lg:grid-cols-5 gap-4"></div>
+
+            <!-- Map -->
+            <div class="glass-panel rounded-3xl border border-cyan-500/20 glow-box overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between px-6 pt-5 pb-3 gap-2">
+                    <div>
+                        <div class="text-xs uppercase tracking-widest text-cyan-400 font-semibold">Live Site Map</div>
+                        <h2 class="font-display text-lg font-bold text-white">All Monitoring Nodes</h2>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs text-slate-400">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Normal</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Warning</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span>Critical</span>
+                    </div>
+                </div>
+                <div class="px-4 pb-4 sm:px-6 sm:pb-6">
+                    <div style="height: 460px;">
+                        <div id="site-map"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Site list -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-display text-lg font-bold text-white">Monitoring Sites</h2>
+                    <span class="text-xs text-slate-400" id="site-count"></span>
+                </div>
+                <div id="site-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="js/charts.js"></script>
+    <script type="module" src="js/command-centre.js"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | AquaSentinel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Space Grotesk -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind config -->
+    <script src="js/tailwind-config.js"></script>
+    <!-- Firebase project config (fill in js/firebase-config.js — see SETUP.md) -->
+    <script src="js/firebase-config.js"></script>
+    <!-- Site styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="bg-aquaDark text-slate-100 font-sans antialiased min-h-screen flex items-center justify-center px-6 py-12 overflow-x-hidden">
+
+    <!-- Background Ambient Glows -->
+    <div class="fixed top-0 left-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="fixed bottom-10 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative w-full max-w-md">
+        <div class="flex flex-col items-center text-center mb-8">
+            <a href="index.html" class="logo-chip w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center mb-4">
+                <img src="assets/aquasentinel-icon.png" alt="AquaSentinel logo" class="w-full h-full object-cover">
+            </a>
+            <h1 class="font-display font-bold text-2xl text-white">Sign in to AquaSentinel</h1>
+            <p class="text-slate-400 text-sm mt-2">Khanyisa Colliery &middot; Compliance Command Centre</p>
+        </div>
+
+        <form id="login-form" class="glass-panel rounded-2xl p-5 space-y-4">
+            <div>
+                <label for="login-email" class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-1.5 block">Email</label>
+                <input id="login-email" type="email" required autocomplete="username"
+                    class="w-full bg-slate-900 border border-slate-700 text-sm text-white rounded-xl px-3 py-2.5 focus:outline-none focus:border-cyan-500"
+                    placeholder="you@khanyisacolliery.demo">
+            </div>
+            <div>
+                <label for="login-password" class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-1.5 block">Password</label>
+                <input id="login-password" type="password" required autocomplete="current-password"
+                    class="w-full bg-slate-900 border border-slate-700 text-sm text-white rounded-xl px-3 py-2.5 focus:outline-none focus:border-cyan-500"
+                    placeholder="••••••••">
+            </div>
+            <p id="login-error" class="hidden text-xs text-rose-400 leading-relaxed"></p>
+            <button id="login-submit" type="submit"
+                class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-sm rounded-xl py-2.5 transition-colors">
+                Sign In
+            </button>
+        </form>
+
+        <div class="glass-panel rounded-2xl p-2 mt-4">
+            <p class="text-[11px] text-slate-500 px-3 pt-2 pb-1">Demo accounts — click to fill in, then Sign In:</p>
+            <button type="button" class="demo-fill user-card w-full flex items-center gap-4 text-left p-3 rounded-xl transition-colors" data-email="unathi@khanyisacolliery.demo" data-password="AquaDemo2026!">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">UM</div>
+                <div class="min-w-0 flex-1">
+                    <span class="text-sm font-semibold text-white">Unathi M.</span>
+                    <span class="text-[10px] uppercase tracking-wide font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-2 py-0.5 ml-2">Compliance Manager</span>
+                </div>
+            </button>
+            <button type="button" class="demo-fill user-card w-full flex items-center gap-4 text-left p-3 rounded-xl transition-colors" data-email="karabo@khanyisacolliery.demo" data-password="AquaDemo2026!">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">KS</div>
+                <div class="min-w-0 flex-1">
+                    <span class="text-sm font-semibold text-white">Karabo S.</span>
+                    <span class="text-[10px] uppercase tracking-wide font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-2 py-0.5 ml-2">Field Officer</span>
+                </div>
+            </button>
+            <button type="button" class="demo-fill user-card w-full flex items-center gap-4 text-left p-3 rounded-xl transition-colors" data-email="thabo@khanyisacolliery.demo" data-password="AquaDemo2026!">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shrink-0">TK</div>
+                <div class="min-w-0 flex-1">
+                    <span class="text-sm font-semibold text-white">Thabo K.</span>
+                    <span class="text-[10px] uppercase tracking-wide font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-2 py-0.5 ml-2">Viewer</span>
+                </div>
+            </button>
+        </div>
+
+        <p class="text-center text-[11px] text-slate-500 mt-6 leading-relaxed">
+            These 3 accounts are created by <code class="text-slate-400">seed/seed.js</code> — see SETUP.md if sign-in fails.
+        </p>
+    </div>
+
+    <script type="module" src="js/login.js"></script>
+</body>
+</html>
