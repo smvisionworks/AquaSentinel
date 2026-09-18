@@ -13,16 +13,85 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!user) return; // not signed in — redirect to login.html already underway
 
     const sensorMeta = [
-        { key: 'waterQuality', icon: 'fa-droplet' },
-        { key: 'ph', icon: 'fa-flask' },
-        { key: 'ec', icon: 'fa-bolt-lightning' },
-        { key: 'temperature', icon: 'fa-temperature-half' },
+        { key: 'conductivity', icon: 'fa-bolt-lightning' },
+        { key: 'waterLevel', icon: 'fa-water' },
+        { key: 'waterFlow', icon: 'fa-gauge-high' },
+        { key: 'gas', icon: 'fa-smog' },
     ];
-    const statusColor = { normal: '#34d399', warning: '#fbbf24', critical: '#fb7185' };
-
     let currentSiteId = null;
     let readingsUnsub = null;
     let latestReadings = [];
+
+    // ---- ICT Baddies live feed relay -------------------------------
+    // While this page is open on the "ICT Baddies" site (the teammate's
+    // real ESP32, reporting into their hackathon-b819d Realtime Database),
+    // poll that feed every 2 seconds — same cadence and field names as
+    // their own dashboard's fetchData() — and forward each reading into
+    // AquaSentinel's own ingestReading Cloud Function. That write is what
+    // actually drives the sensor cards, trend charts and reading log
+    // below: they're already listening to Firestore, so there's no
+    // separate rendering path here, just this relay feeding the same pipe
+    // every other device uses.
+    const HACKATHON_FEED_URL = 'https://hackathon-b819d-default-rtdb.firebaseio.com/sensors.json';
+    const HACKATHON_FEED_SITE_ID = 'site-field-prototype'; // "ICT Baddies"
+    const HACKATHON_INGEST_URL = 'https://us-central1-aquasentinel-3db91.cloudfunctions.net/ingestReading';
+    const HACKATHON_DEVICE_KEY = 'demo-esp32-proto-01';
+    const HACKATHON_TANK_CAPACITY_LITRES = 50; // same placeholder used in functions/index.js's syncHackathonFeed
+
+    let hackathonFeedTimer = null;
+    let hackathonPrevWaterLevel = null;
+    let hackathonPrevAt = null;
+
+    async function pollHackathonFeed() {
+        try {
+            const resp = await fetch(HACKATHON_FEED_URL);
+            const data = await resp.json();
+            if (!data) return;
+            const d = data.sensors ? data.sensors : data; // handles nested-under-'sensors' or root, like their own page
+
+            if (typeof d.water_val !== 'number' || typeof d.turbidity_analog !== 'number' || typeof d.gas_val !== 'number') return;
+
+            const waterLevel = Math.max(0, Math.min(100, Math.round((d.water_val / 2500) * 100)));
+            const conductivity = d.turbidity_analog;
+            const gas = d.gas_val;
+
+            // No flow sensor in this feed — estimate it from how fast the
+            // level changes between polls, same as the retired firmware did.
+            let waterFlow = 0;
+            const now = Date.now();
+            if (hackathonPrevWaterLevel !== null && hackathonPrevAt) {
+                const dtMinutes = (now - hackathonPrevAt) / 60000;
+                if (dtMinutes > 0) {
+                    waterFlow = (Math.abs(waterLevel - hackathonPrevWaterLevel) / 100) * HACKATHON_TANK_CAPACITY_LITRES / dtMinutes;
+                }
+            }
+            hackathonPrevWaterLevel = waterLevel;
+            hackathonPrevAt = now;
+
+            await fetch(HACKATHON_INGEST_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ deviceKey: HACKATHON_DEVICE_KEY, conductivity, waterLevel, waterFlow: Number(waterFlow.toFixed(2)), gas }),
+            });
+        } catch (err) {
+            console.error('AquaSentinel: ICT Baddies feed poll failed', err);
+        }
+    }
+
+    function syncHackathonFeedTimer(siteId) {
+        if (siteId === HACKATHON_FEED_SITE_ID) {
+            if (!hackathonFeedTimer) {
+                pollHackathonFeed();
+                hackathonFeedTimer = setInterval(pollHackathonFeed, 2000);
+            }
+        } else if (hackathonFeedTimer) {
+            clearInterval(hackathonFeedTimer);
+            hackathonFeedTimer = null;
+            hackathonPrevWaterLevel = null;
+            hackathonPrevAt = null;
+        }
+    }
+    window.addEventListener('beforeunload', () => { if (hackathonFeedTimer) clearInterval(hackathonFeedTimer); });
 
     function renderHeader(site) {
         document.getElementById('site-header').innerHTML = `
@@ -57,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function renderPipeline(site) {
         const stages = [
-            { key: 'sense', label: 'Sense', icon: 'fa-satellite-dish', desc: '4 sensors sample the water' },
+            { key: 'sense', label: 'Sense', icon: 'fa-satellite-dish', desc: 'Water + gas sensors sample the water' },
             { key: 'decide', label: 'Decide', icon: 'fa-microchip', desc: 'ESP32 compares to thresholds' },
             { key: 'act', label: 'Act', icon: 'fa-bolt', desc: 'Pump / valve respond locally' },
             { key: 'send', label: 'Send', icon: 'fa-cloud-arrow-up', desc: 'Reading logged to AquaSentinel' },
@@ -76,6 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderSensorCards(site) {
+        // Plain current-value readings, no trend chart — simpler, and
+        // avoids the trend chart glitching on a site (like ICT Baddies)
+        // that only has a handful of readings so far.
         document.getElementById('sensor-cards').innerHTML = sensorMeta.map((m) => {
             const d = site.sensors[m.key] || { label: m.key, value: '—', unit: '', status: 'normal' };
             const rangeText = d.normRange ? `Normal range: ${d.normRange[0]}–${d.normRange[1]} ${d.unit}` : 'Composite index (0–100)';
@@ -89,19 +161,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ${AQUA_SHELL.statusBadge(d.status, { size: 'sm' })}
                 </div>
                 <div class="font-display text-3xl font-bold text-white mt-2">${d.value}<span class="text-base text-slate-400 font-sans font-normal ml-1">${d.unit}</span></div>
-                <div class="text-[11px] text-slate-500 mb-3">${rangeText}</div>
-                <div class="chart-wrap chart-${m.key}"></div>
+                <div class="text-[11px] text-slate-500">${rangeText}</div>
             </div>`;
         }).join('');
-
-        sensorMeta.forEach((m) => {
-            const d = site.sensors[m.key];
-            const el = document.querySelector(`.chart-${m.key}`);
-            const history = latestReadings.map((r) => r[m.key]).filter((v) => typeof v === 'number');
-            if (el && d && history.length) {
-                AQUA_CHARTS.renderTrendChart(el, history, { color: statusColor[d.status], unit: ' ' + d.unit, normRange: d.normRange });
-            }
-        });
     }
 
     function renderActuators(site) {
@@ -147,11 +209,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const rows = latestReadings.slice(-8).reverse().map((r) => `
             <tr>
                 <td class="text-slate-400">${r.at ? new Date(r.at).toLocaleString('en-ZA', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'}</td>
-                <td class="text-white font-medium">${r.ph}</td>
-                <td class="text-white font-medium">${r.ec}</td>
-                <td class="text-white font-medium">${r.temperature}°C</td>
+                <td class="text-white font-medium">${r.conductivity} µS/cm</td>
+                <td class="text-white font-medium">${r.waterLevel}%</td>
+                <td class="text-white font-medium">${r.waterFlow} L/min</td>
+                <td class="text-white font-medium">${r.gas} ppm</td>
             </tr>`);
-        document.getElementById('reading-log').innerHTML = rows.join('') || `<tr><td colspan="4" class="text-center text-slate-500 py-6">No readings yet.</td></tr>`;
+        document.getElementById('reading-log').innerHTML = rows.join('') || `<tr><td colspan="5" class="text-center text-slate-500 py-6">No readings yet.</td></tr>`;
     }
 
     function render() {
@@ -166,6 +229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const s = AQUA.siteById(currentSiteId);
                 if (s) { renderSensorCards(s); renderReadingLog(); }
             });
+            syncHackathonFeedTimer(site.id);
         }
 
         renderHeader(site);

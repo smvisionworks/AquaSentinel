@@ -20,7 +20,7 @@ function buildPrompt({ site, incident, readings }) {
         .join('\n');
 
     const readingLines = readings.length
-        ? readings.map((r) => `  ${r.at} — pH ${r.ph}, EC ${r.ec} µS/cm, WQI ${r.waterQuality}, ${r.temperature}°C`).join('\n')
+        ? readings.map((r) => `  ${r.at} — Conductivity ${r.conductivity} µS/cm, Water Level ${r.waterLevel}%, Water Flow ${r.waterFlow} L/min, Gas ${r.gas} ppm CO₂`).join('\n')
         : '  (no historical readings available for this site yet)';
 
     return `You are AquaSentinel's Incident Analysis & Compliance Agent, monitoring acid mine drainage risk at Khanyisa Colliery in Mpumalanga, South Africa.

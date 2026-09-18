@@ -149,7 +149,7 @@ function watchSiteReadings(siteId, limitN, cb) {
     return onSnapshot(q, (snap) => {
         cb(snap.docs.map((d) => {
             const v = d.data();
-            return { at: tsToIso(v.at), ph: v.ph, ec: v.ec, waterQuality: v.waterQuality, temperature: v.temperature };
+            return { at: tsToIso(v.at), conductivity: v.conductivity, waterLevel: v.waterLevel, waterFlow: v.waterFlow, gas: v.gas };
         }));
     }, (err) => console.error('AquaSentinel: readings listener failed', err));
 }

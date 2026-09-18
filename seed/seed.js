@@ -47,15 +47,19 @@ const DEMO_USERS = [
 ];
 
 // ---- Sites: one mine, six water-monitoring points -------------------------
+// Sensor model: a water sensor reads conductivity (our turbidity proxy),
+// water level, and water flow; a gas sensor mounted face-down over the
+// water reads CO2. No pH probe, no temperature probe, no composite WQI —
+// see functions/thresholds.js for the bounds these status values follow.
 const SITES = [
     {
         id: 'site-tailings-01', name: 'Tailings Dam Outflow', device: 'ESP32-AQS-014',
         lat: -25.8752, lng: 29.2323, status: 'warning', edgeStage: 'act',
         sensors: {
-            waterQuality: { label: 'Water Quality Index', value: 58, unit: '/100', status: 'warning', seed: [6, 11] },
-            ph: { label: 'pH', value: 5.8, unit: 'pH', status: 'warning', normRange: [6.5, 8.5], seed: [0.4, 23] },
-            ec: { label: 'Conductivity (EC)', value: 1460, unit: 'µS/cm', status: 'warning', normRange: [0, 1200], seed: [90, 37] },
-            temperature: { label: 'Temperature', value: 21.6, unit: '°C', status: 'normal', normRange: [15, 26], seed: [1.2, 51] },
+            conductivity: { label: 'Conductivity (Turbidity)', value: 1460, unit: 'µS/cm', status: 'warning', normRange: [0, 1200], seed: [90, 37] },
+            waterLevel: { label: 'Water Level', value: 88, unit: '%', status: 'warning', normRange: [20, 85], seed: [4, 23] },
+            waterFlow: { label: 'Water Flow', value: 14, unit: 'L/min', status: 'normal', normRange: [3, 30], seed: [2, 51] },
+            gas: { label: 'Gas (CO₂)', value: 1300, unit: 'ppm', status: 'warning', normRange: [0, 1000], seed: [110, 12] },
         },
         actuators: { dosingPump: { state: 'active', label: 'Dosing Pump P-01', lastActivatedHoursAgo: 0.15 }, valve: { state: 'open', label: 'Isolation Valve V-01', lastActivatedHoursAgo: null } },
     },
@@ -63,10 +67,10 @@ const SITES = [
         id: 'site-pitwater-01', name: 'Pit Water Station', device: 'ESP32-AQS-002',
         lat: -25.8695, lng: 29.2410, status: 'critical', edgeStage: 'act',
         sensors: {
-            waterQuality: { label: 'Water Quality Index', value: 31, unit: '/100', status: 'critical', seed: [8, 7] },
-            ph: { label: 'pH', value: 3.4, unit: 'pH', status: 'critical', normRange: [6.5, 8.5], seed: [0.5, 19] },
-            ec: { label: 'Conductivity (EC)', value: 2380, unit: 'µS/cm', status: 'critical', normRange: [0, 1200], seed: [140, 29] },
-            temperature: { label: 'Temperature', value: 19.8, unit: '°C', status: 'normal', normRange: [15, 26], seed: [1.0, 41] },
+            conductivity: { label: 'Conductivity (Turbidity)', value: 2380, unit: 'µS/cm', status: 'critical', normRange: [0, 1200], seed: [140, 29] },
+            waterLevel: { label: 'Water Level', value: 96, unit: '%', status: 'critical', normRange: [20, 85], seed: [3, 19] },
+            waterFlow: { label: 'Water Flow', value: 46, unit: 'L/min', status: 'critical', normRange: [3, 30], seed: [6, 7] },
+            gas: { label: 'Gas (CO₂)', value: 2450, unit: 'ppm', status: 'critical', normRange: [0, 1000], seed: [180, 41] },
         },
         actuators: { dosingPump: { state: 'active', label: 'Dosing Pump P-01', lastActivatedHoursAgo: 0.3 }, valve: { state: 'closed', label: 'Isolation Valve V-01', lastActivatedHoursAgo: 0.2 } },
     },
@@ -74,10 +78,10 @@ const SITES = [
         id: 'site-plant-01', name: 'Process Plant Discharge', device: 'ESP32-AQS-009',
         lat: -25.8810, lng: 29.2260, status: 'normal', edgeStage: 'send',
         sensors: {
-            waterQuality: { label: 'Water Quality Index', value: 88, unit: '/100', status: 'normal', seed: [3, 3] },
-            ph: { label: 'pH', value: 7.4, unit: 'pH', status: 'normal', normRange: [6.5, 8.5], seed: [0.15, 13] },
-            ec: { label: 'Conductivity (EC)', value: 310, unit: 'µS/cm', status: 'normal', normRange: [0, 1200], seed: [25, 17] },
-            temperature: { label: 'Temperature', value: 19.4, unit: '°C', status: 'normal', normRange: [15, 26], seed: [0.6, 31] },
+            conductivity: { label: 'Conductivity (Turbidity)', value: 310, unit: 'µS/cm', status: 'normal', normRange: [0, 1200], seed: [25, 17] },
+            waterLevel: { label: 'Water Level', value: 55, unit: '%', status: 'normal', normRange: [20, 85], seed: [5, 13] },
+            waterFlow: { label: 'Water Flow', value: 12, unit: 'L/min', status: 'normal', normRange: [3, 30], seed: [2, 3] },
+            gas: { label: 'Gas (CO₂)', value: 420, unit: 'ppm', status: 'normal', normRange: [0, 1000], seed: [60, 31] },
         },
         actuators: { dosingPump: { state: 'idle', label: 'Dosing Pump P-01', lastActivatedHoursAgo: 48 }, valve: { state: 'open', label: 'Isolation Valve V-01', lastActivatedHoursAgo: null } },
     },
@@ -85,10 +89,10 @@ const SITES = [
         id: 'site-borehole-03', name: 'Borehole 3 — Groundwater', device: 'ESP32-AQS-021',
         lat: -25.8630, lng: 29.2200, status: 'normal', edgeStage: 'send',
         sensors: {
-            waterQuality: { label: 'Water Quality Index', value: 81, unit: '/100', status: 'normal', seed: [3, 5] },
-            ph: { label: 'pH', value: 7.1, unit: 'pH', status: 'normal', normRange: [6.5, 8.5], seed: [0.2, 15] },
-            ec: { label: 'Conductivity (EC)', value: 420, unit: 'µS/cm', status: 'normal', normRange: [0, 1200], seed: [30, 25] },
-            temperature: { label: 'Temperature', value: 18.9, unit: '°C', status: 'normal', normRange: [15, 26], seed: [0.7, 35] },
+            conductivity: { label: 'Conductivity (Turbidity)', value: 420, unit: 'µS/cm', status: 'normal', normRange: [0, 1200], seed: [30, 25] },
+            waterLevel: { label: 'Water Level', value: 48, unit: '%', status: 'normal', normRange: [20, 85], seed: [4, 15] },
+            waterFlow: { label: 'Water Flow', value: 9, unit: 'L/min', status: 'normal', normRange: [3, 30], seed: [1.5, 5] },
+            gas: { label: 'Gas (CO₂)', value: 380, unit: 'ppm', status: 'normal', normRange: [0, 1000], seed: [55, 35] },
         },
         actuators: { dosingPump: { state: 'idle', label: 'Dosing Pump P-01', lastActivatedHoursAgo: 72 }, valve: { state: 'open', label: 'Isolation Valve V-01', lastActivatedHoursAgo: null } },
     },
@@ -96,10 +100,10 @@ const SITES = [
         id: 'site-stormwater-01', name: 'Perimeter Stormwater Drain', device: 'ESP32-AQS-017',
         lat: -25.8870, lng: 29.2380, status: 'warning', edgeStage: 'decide',
         sensors: {
-            waterQuality: { label: 'Water Quality Index', value: 63, unit: '/100', status: 'warning', seed: [5, 9] },
-            ph: { label: 'pH', value: 6.1, unit: 'pH', status: 'warning', normRange: [6.5, 8.5], seed: [0.3, 21] },
-            ec: { label: 'Conductivity (EC)', value: 1310, unit: 'µS/cm', status: 'warning', normRange: [0, 1200], seed: [80, 33] },
-            temperature: { label: 'Temperature', value: 20.5, unit: '°C', status: 'normal', normRange: [15, 26], seed: [0.9, 45] },
+            conductivity: { label: 'Conductivity (Turbidity)', value: 1310, unit: 'µS/cm', status: 'warning', normRange: [0, 1200], seed: [80, 33] },
+            waterLevel: { label: 'Water Level', value: 87, unit: '%', status: 'warning', normRange: [20, 85], seed: [3, 21] },
+            waterFlow: { label: 'Water Flow', value: 18, unit: 'L/min', status: 'normal', normRange: [3, 30], seed: [3, 45] },
+            gas: { label: 'Gas (CO₂)', value: 650, unit: 'ppm', status: 'normal', normRange: [0, 1000], seed: [70, 9] },
         },
         actuators: { dosingPump: { state: 'idle', label: 'Dosing Pump P-01', lastActivatedHoursAgo: 6 }, valve: { state: 'open', label: 'Isolation Valve V-01', lastActivatedHoursAgo: null } },
     },
@@ -107,20 +111,40 @@ const SITES = [
         id: 'site-catchment-dam-02', name: 'Catchment Dam (Downstream)', device: 'ESP32-AQS-015',
         lat: -25.8460, lng: 29.1690, status: 'normal', edgeStage: 'send',
         sensors: {
-            waterQuality: { label: 'Water Quality Index', value: 84, unit: '/100', status: 'normal', seed: [3, 4] },
-            ph: { label: 'pH', value: 7.2, unit: 'pH', status: 'normal', normRange: [6.5, 8.5], seed: [0.15, 14] },
-            ec: { label: 'Conductivity (EC)', value: 380, unit: 'µS/cm', status: 'normal', normRange: [0, 1200], seed: [28, 24] },
-            temperature: { label: 'Temperature', value: 20.1, unit: '°C', status: 'normal', normRange: [15, 26], seed: [0.6, 34] },
+            conductivity: { label: 'Conductivity (Turbidity)', value: 380, unit: 'µS/cm', status: 'normal', normRange: [0, 1200], seed: [28, 24] },
+            waterLevel: { label: 'Water Level', value: 52, unit: '%', status: 'normal', normRange: [20, 85], seed: [4, 14] },
+            waterFlow: { label: 'Water Flow', value: 15, unit: 'L/min', status: 'normal', normRange: [3, 30], seed: [2, 34] },
+            gas: { label: 'Gas (CO₂)', value: 410, unit: 'ppm', status: 'normal', normRange: [0, 1000], seed: [50, 44] },
         },
         actuators: { dosingPump: { state: 'idle', label: 'Dosing Pump P-01', lastActivatedHoursAgo: 30 }, valve: { state: 'open', label: 'Isolation Valve V-01', lastActivatedHoursAgo: null } },
+    },
+    {
+        // Real ESP32 breadboard prototype — a teammate's board, running its
+        // own sketch, that reports into the hackathon-b819d Realtime
+        // Database. The syncHackathonFeed scheduled Cloud Function (see
+        // functions/index.js) polls that feed every minute and writes real
+        // readings here — no bridge script or USB connection needed on this
+        // end any more. These sensor values are just placeholders until the
+        // first synced reading arrives. Coordinates are a rough guess near
+        // the other Khanyisa Colliery points — move the pin to wherever the
+        // board is actually testing.
+        id: 'site-field-prototype', name: 'ICT Baddies', device: 'ESP32-PROTO-01',
+        lat: -25.8700, lng: 29.2300, status: 'normal', edgeStage: 'send',
+        sensors: {
+            conductivity: { label: 'Conductivity (Turbidity)', value: 400, unit: 'µS/cm', status: 'normal', normRange: [0, 1200], seed: [20, 6] },
+            waterLevel: { label: 'Water Level', value: 50, unit: '%', status: 'normal', normRange: [20, 85], seed: [3, 8] },
+            waterFlow: { label: 'Water Flow', value: 0, unit: 'L/min', status: 'normal', normRange: [3, 30], seed: [0.5, 10] },
+            gas: { label: 'Gas (CO₂)', value: 400, unit: 'ppm', status: 'normal', normRange: [0, 1000], seed: [30, 12] },
+        },
+        actuators: { dosingPump: { state: 'idle', label: 'Dosing Pump P-01', lastActivatedHoursAgo: null }, valve: { state: 'open', label: 'Isolation Valve V-01', lastActivatedHoursAgo: null } },
     },
 ];
 
 const INCIDENTS = [
     { id: 'inc-1001', siteId: 'site-pitwater-01', severity: 'critical', hoursAgo: 0.3,
-      trigger: 'pH dropped to 3.4 (threshold 5.5) with EC rising sharply — consistent with an acid mine drainage breakthrough.',
+      trigger: 'Water level spiked to 96% (critical) with conductivity at 2380 µS/cm and CO₂ climbing sharply to 2450 ppm — consistent with a containment breach and an acid mine drainage release.',
       response: ['Dosing Pump P-01 activated (alkaline neutralisation)', 'Isolation Valve V-01 closed — downstream flow contained'],
-      evidence: { before: { ph: 3.4, ec: 2380, turbidity: 'HIGH' }, after: { ph: 4.6, ec: 2210, turbidity: 'HIGH' } },
+      evidence: { before: { conductivity: 2380, waterLevel: 96, gas: 2450 }, after: { conductivity: 2100, waterLevel: 74, gas: 1620 } },
       status: 'investigating', assignedTo: 'Unathi M.',
       audit: [
           { at: hoursAgo(0.3), text: 'Edge decision: CRITICAL — valve closed, pump activated automatically by ESP32-AQS-002.' },
@@ -128,18 +152,18 @@ const INCIDENTS = [
           { at: hoursAgo(0.1), text: 'Assigned to Unathi M. for site inspection.' },
       ] },
     { id: 'inc-1002', siteId: 'site-tailings-01', severity: 'warning', hoursAgo: 0.15,
-      trigger: 'pH trending down (5.8, threshold 6.5) with EC above baseline — early contamination signature.',
+      trigger: 'Conductivity trending up to 1460 µS/cm with water level rising toward 88% — early containment-rise signature.',
       response: ['Dosing Pump P-01 activated (alkaline neutralisation)'],
-      evidence: { before: { ph: 5.8, ec: 1460, turbidity: 'MODERATE' }, after: { ph: 6.3, ec: 1390, turbidity: 'MODERATE' } },
+      evidence: { before: { conductivity: 1390, waterLevel: 82, gas: 1180 }, after: { conductivity: 1460, waterLevel: 88, gas: 1300 } },
       status: 'open', assignedTo: 'Karabo S.',
       audit: [
           { at: hoursAgo(0.15), text: 'Edge decision: WARNING — dosing pump activated automatically by ESP32-AQS-014.' },
           { at: hoursAgo(0.14), text: 'Incident auto-logged to compliance ledger (#INC-1002).' },
       ] },
     { id: 'inc-1004', siteId: 'site-pitwater-01', severity: 'critical', hoursAgo: 30,
-      trigger: 'Conductivity spike to 2510 µS/cm following heavy rainfall — suspected tailings runoff.',
+      trigger: 'Water flow surged to 46 L/min following heavy rainfall, with conductivity rising to 2510 µS/cm — suspected tailings runoff breach.',
       response: ['Isolation Valve V-01 closed — downstream flow contained', 'Site inspection task created'],
-      evidence: { before: { ph: 4.1, ec: 2510, turbidity: 'HIGH' }, after: { ph: 4.4, ec: 2260, turbidity: 'MODERATE' } },
+      evidence: { before: { conductivity: 2510, waterLevel: 91, gas: 2200 }, after: { conductivity: 2260, waterLevel: 68, gas: 1400 } },
       status: 'resolved', assignedTo: 'Amu N.',
       audit: [
           { at: hoursAgo(30), text: 'Edge decision: CRITICAL — valve closed automatically by ESP32-AQS-002.' },
@@ -148,18 +172,18 @@ const INCIDENTS = [
           { at: hoursAgo(19.8), text: 'Marked resolved by Amu N.' },
       ] },
     { id: 'inc-1005', siteId: 'site-stormwater-01', severity: 'warning', hoursAgo: 3,
-      trigger: 'pH drifted to 6.1 (threshold 6.5), EC trending upward over 3 hours.',
+      trigger: 'Water level drifted to 87% (threshold 85%) with conductivity trending upward over 3 hours.',
       response: ['Edge processor flagged WARNING — dosing pump on standby'],
-      evidence: { before: { ph: 6.4, ec: 1220, turbidity: 'LOW' }, after: { ph: 6.1, ec: 1310, turbidity: 'MODERATE' } },
+      evidence: { before: { conductivity: 1220, waterLevel: 84, gas: 600 }, after: { conductivity: 1310, waterLevel: 87, gas: 650 } },
       status: 'investigating', assignedTo: 'Siya P.',
       audit: [
           { at: hoursAgo(3), text: 'Edge decision: WARNING — monitoring increased, dosing pump armed by ESP32-AQS-017.' },
           { at: hoursAgo(2.9), text: 'Incident auto-logged to compliance ledger (#INC-1005).' },
       ] },
     { id: 'inc-1006', siteId: 'site-tailings-01', severity: 'warning', hoursAgo: 50,
-      trigger: 'Turbidity spike after upstream blasting activity.',
+      trigger: 'CO₂ (gas) spike detected after upstream blasting activity, with conductivity briefly elevated.',
       response: ['Dosing Pump P-01 activated', 'Downstream sensor confirmed recovery within 40 minutes'],
-      evidence: { before: { ph: 6.6, ec: 1180, turbidity: 'HIGH' }, after: { ph: 6.8, ec: 1120, turbidity: 'LOW' } },
+      evidence: { before: { conductivity: 1180, waterLevel: 80, gas: 1450 }, after: { conductivity: 1120, waterLevel: 75, gas: 820 } },
       status: 'resolved', assignedTo: 'Karabo S.',
       audit: [
           { at: hoursAgo(50), text: 'Edge decision: WARNING — dosing pump activated automatically.' },
@@ -171,7 +195,7 @@ const INCIDENTS = [
 const TASKS = [
     { id: 'tsk-01', type: 'inspection', siteId: 'site-pitwater-01', title: 'Physical inspection — Valve V-01 closure event', assignedTo: 'Unathi M.', dueHoursAgo: -6, status: 'in-progress', priority: 'high' },
     { id: 'tsk-02', type: 'inspection', siteId: 'site-tailings-01', title: 'Verify dosing tank chemical levels', assignedTo: 'Karabo S.', dueHoursAgo: -24, status: 'pending', priority: 'medium' },
-    { id: 'tsk-03', type: 'maintenance', siteId: 'site-stormwater-01', title: 'Calibrate pH probe (drift detected)', assignedTo: 'Siya P.', dueHoursAgo: -48, status: 'pending', priority: 'medium' },
+    { id: 'tsk-03', type: 'maintenance', siteId: 'site-stormwater-01', title: 'Calibrate water sensor (conductivity drift detected)', assignedTo: 'Siya P.', dueHoursAgo: -48, status: 'pending', priority: 'medium' },
     { id: 'tsk-04', type: 'report', siteId: 'site-pitwater-01', title: 'Submit incident report — INC-1001', assignedTo: 'Unathi M.', dueHoursAgo: -2, status: 'pending', priority: 'high' },
     { id: 'tsk-05', type: 'inspection', siteId: 'site-plant-01', title: 'Quarterly sensor housing inspection', assignedTo: 'Amu N.', dueHoursAgo: -72, status: 'done', priority: 'low' },
     { id: 'tsk-06', type: 'maintenance', siteId: 'site-catchment-dam-02', title: 'Replace conductivity probe membrane', assignedTo: 'Amu N.', dueHoursAgo: -96, status: 'done', priority: 'low' },
@@ -249,16 +273,16 @@ async function seedSites() {
 
         // Reading history -> readings subcollection (spaced back from now,
         // matching how the old sparkline data was laid out: ~1.5h apart).
-        const points = historyBySensor.ph.length;
+        const points = historyBySensor.conductivity.length;
         for (let i = 0; i < points; i++) {
             const readingRef = siteRef.collection('readings').doc();
             const hoursBack = (points - 1 - i) * 1.5;
             batch.set(readingRef, {
                 at: admin.firestore.Timestamp.fromMillis(NOW - hoursBack * 3600 * 1000),
-                ph: historyBySensor.ph[i],
-                ec: historyBySensor.ec[i],
-                waterQuality: historyBySensor.waterQuality[i],
-                temperature: historyBySensor.temperature[i],
+                conductivity: historyBySensor.conductivity[i],
+                waterLevel: historyBySensor.waterLevel[i],
+                waterFlow: historyBySensor.waterFlow[i],
+                gas: historyBySensor.gas[i],
             });
         }
     }

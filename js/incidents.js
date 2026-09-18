@@ -78,17 +78,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3">
                         <div class="text-[10px] uppercase text-slate-500 mb-2">Before</div>
                         <div class="text-xs text-slate-300 space-y-1">
-                            <div>pH: <span class="text-white font-semibold">${inc.evidence.before.ph}</span></div>
-                            <div>EC: <span class="text-white font-semibold">${inc.evidence.before.ec} µS/cm</span></div>
-                            <div>Turbidity: <span class="text-white font-semibold">${inc.evidence.before.turbidity}</span></div>
+                            <div>Conductivity: <span class="text-white font-semibold">${inc.evidence.before.conductivity} µS/cm</span></div>
+                            <div>Water Level: <span class="text-white font-semibold">${inc.evidence.before.waterLevel}%</span></div>
+                            <div>Gas (CO₂): <span class="text-white font-semibold">${inc.evidence.before.gas} ppm</span></div>
                         </div>
                     </div>
                     <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3">
                         <div class="text-[10px] uppercase text-slate-500 mb-2">After</div>
                         <div class="text-xs text-slate-300 space-y-1">
-                            <div>pH: <span class="text-white font-semibold">${inc.evidence.after.ph}</span></div>
-                            <div>EC: <span class="text-white font-semibold">${inc.evidence.after.ec} µS/cm</span></div>
-                            <div>Turbidity: <span class="text-white font-semibold">${inc.evidence.after.turbidity}</span></div>
+                            <div>Conductivity: <span class="text-white font-semibold">${inc.evidence.after.conductivity} µS/cm</span></div>
+                            <div>Water Level: <span class="text-white font-semibold">${inc.evidence.after.waterLevel}%</span></div>
+                            <div>Gas (CO₂): <span class="text-white font-semibold">${inc.evidence.after.gas} ppm</span></div>
                         </div>
                     </div>
                 </div>

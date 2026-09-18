@@ -67,10 +67,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="text-xs text-slate-400 mb-2">${site.mine} · ${site.region}</div>
                     <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-slate-300 mb-3">
-                        <div>pH: <span class="text-white font-semibold">${s.ph ? s.ph.value : '—'}</span></div>
-                        <div>EC: <span class="text-white font-semibold">${s.ec ? s.ec.value : '—'} µS/cm</span></div>
-                        <div>WQI: <span class="text-white font-semibold">${s.waterQuality ? s.waterQuality.value : '—'}/100</span></div>
-                        <div>Temp: <span class="text-white font-semibold">${s.temperature ? s.temperature.value : '—'}°C</span></div>
+                        <div>Conductivity: <span class="text-white font-semibold">${s.conductivity ? s.conductivity.value : '—'} µS/cm</span></div>
+                        <div>Water Level: <span class="text-white font-semibold">${s.waterLevel ? s.waterLevel.value : '—'}%</span></div>
+                        <div>Flow: <span class="text-white font-semibold">${s.waterFlow ? s.waterFlow.value : '—'} L/min</span></div>
+                        <div>Gas: <span class="text-white font-semibold">${s.gas ? s.gas.value : '—'} ppm</span></div>
                     </div>
                     <a href="site.html?id=${site.id}" class="inline-flex items-center gap-1.5 text-cyan-400 text-xs font-semibold hover:text-cyan-300">
                         View Site <i class="fa-solid fa-arrow-right text-[10px]"></i>
@@ -106,16 +106,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
                 <div class="grid grid-cols-3 gap-2 mb-3 text-center">
                     <div class="bg-slate-900/60 rounded-xl py-2">
-                        <div class="text-[10px] text-slate-500 uppercase">pH</div>
-                        <div class="text-sm font-display font-bold text-white">${s.ph ? s.ph.value : '—'}</div>
+                        <div class="text-[10px] text-slate-500 uppercase">Conductivity</div>
+                        <div class="text-sm font-display font-bold text-white">${s.conductivity ? s.conductivity.value : '—'}</div>
                     </div>
                     <div class="bg-slate-900/60 rounded-xl py-2">
-                        <div class="text-[10px] text-slate-500 uppercase">EC</div>
-                        <div class="text-sm font-display font-bold text-white">${s.ec ? s.ec.value : '—'}</div>
+                        <div class="text-[10px] text-slate-500 uppercase">Level</div>
+                        <div class="text-sm font-display font-bold text-white">${s.waterLevel ? s.waterLevel.value : '—'}%</div>
                     </div>
                     <div class="bg-slate-900/60 rounded-xl py-2">
-                        <div class="text-[10px] text-slate-500 uppercase">WQI</div>
-                        <div class="text-sm font-display font-bold text-white">${s.waterQuality ? s.waterQuality.value : '—'}</div>
+                        <div class="text-[10px] text-slate-500 uppercase">Gas</div>
+                        <div class="text-sm font-display font-bold text-white">${s.gas ? s.gas.value : '—'}</div>
                     </div>
                 </div>
                 <div class="spark-${site.id} h-9"></div>
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = document.querySelector(`.spark-${CSS.escape(site.id)}`);
             if (!el) return;
             const unsub = AQUA.watchSiteReadings(site.id, 14, (readings) => {
-                AQUA_CHARTS.renderSparkline(el, readings.map((r) => r.waterQuality), statusColor[site.status]);
+                AQUA_CHARTS.renderSparkline(el, readings.map((r) => r.conductivity), statusColor[site.status]);
             });
             sparkUnsubs.push(unsub);
         });
